@@ -1,0 +1,52 @@
+Specifically apache and snmpd needs to be installed. mrtg uses snmp to get information and apache2 to display it on web server
+sudo apt-get install apache2
+and
+sudo apt-get install snmpd
+and
+sudo apt-get install snmp
+
+Now you need to edit the /etc/snmp/snmpd.conf file
+sudo vi /etc/snmp/snmpd.conf
+
+uncomment the following lines
+#agentAddress udp:161,udp6:[::1]:161
+to
+agentAddress udp:161,udp6:[::1]:161
+and
+#rocommunity public localhost
+to
+rocommunity public localhost
+if it still not works, go on to the snmpd changes file in my github
+Save and exit the file
+
+You need to restart the snmpd service using the following command
+sudo systemctl snmpd restart
+
+Installation
+To install MRTG, simply run:
+sudo apt-get install mrtg
+
+Configuration
+MRTG
+Now that mrtg is installed, we must create a home where web pages related to the program can reside.
+sudo mkdir /var/www/html/mrtg
+
+Now you need to edit the /etc/mrt.cfg file
+vi sudo /etc/mrt.cfg
+change the working directory from
+WorkDir: /var/www/mrtg
+to
+WorkDir: /var/www/html/mrtg
+Save and exit the file
+
+Backup the original /etc/mrt.cfg file:
+sudo cp /etc/mrtg.cfg /etc/mrtg.cfg.ORIGINAL
+
+Create a configuration file for MRTG:
+cfgmaker <snmp_community_string>@<ip_address_of_device_to_be_monitored> > /etc/mrtg.cfg
+
+Create and index file for the webserver :
+indexmaker /etc/mrtg.cfg > /var/www/mrtg/index.html
+
+Reboot your server and wait about 5 minutes before browsing to:
+http://<server_ip>/mrtg
